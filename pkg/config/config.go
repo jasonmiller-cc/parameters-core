@@ -81,18 +81,8 @@ func Load(path, envPrefix string, out any) error {
 		return fmt.Errorf("read config %s: %w", path, err)
 	}
 
-	applyEnv(envPrefix, out)
+	ApplyEnv(envPrefix, out)
 	return nil
-}
-
-// applyEnv overlays environment variables tagged with `env:"VAR"` onto dst.
-// This is a simple implementation; production callers should use reflect or viper.
-func applyEnv(prefix string, _ any) {
-	// Intentionally left minimal: services that need deep env overlay
-	// should embed BaseConfig and read env vars directly using os.Getenv.
-	// The env tag is present for documentation; a full reflect-based
-	// implementation is in pkg/config/env.go.
-	_ = prefix
 }
 
 func defaultConfigPath(envPrefix string) string {

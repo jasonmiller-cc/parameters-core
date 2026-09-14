@@ -77,13 +77,13 @@ func (c *Client) Delete(ctx context.Context, path string) error {
 }
 
 func (c *Client) do(ctx context.Context, method, path string, body, out any) error {
-	var bodyR io.Reader
+	var bodyBytes []byte
 	if body != nil {
 		b, err := json.Marshal(body)
 		if err != nil {
 			return fmt.Errorf("marshal body: %w", err)
 		}
-		bodyR = bytes.NewReader(b)
+		bodyBytes = b
 	}
 
 	var lastErr error
@@ -94,6 +94,11 @@ func (c *Client) do(ctx context.Context, method, path string, body, out any) err
 				return ctx.Err()
 			case <-time.After(time.Duration(attempt) * 500 * time.Millisecond):
 			}
+		}
+
+		var bodyR io.Reader
+		if bodyBytes != nil {
+			bodyR = bytes.NewReader(bodyBytes)
 		}
 
 		req, err := http.NewRequestWithContext(ctx, method, c.base+path, bodyR)

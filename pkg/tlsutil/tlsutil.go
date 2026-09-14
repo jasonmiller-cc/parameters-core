@@ -5,6 +5,7 @@ package tlsutil
 import (
 	"crypto/tls"
 	"crypto/x509"
+	"encoding/pem"
 	"fmt"
 	"os"
 	"time"
@@ -38,14 +39,11 @@ func ExpiresIn(certFile string) (time.Duration, error) {
 	if err != nil {
 		return 0, fmt.Errorf("read cert file: %w", err)
 	}
-	pool := x509.NewCertPool()
-	pool.AppendCertsFromPEM(data)
-
-	block := parsePEM(data)
+	block, _ := pem.Decode(data)
 	if block == nil {
 		return 0, fmt.Errorf("no PEM block found in %s", certFile)
 	}
-	cert, err := x509.ParseCertificate(block)
+	cert, err := x509.ParseCertificate(block.Bytes)
 	if err != nil {
 		return 0, fmt.Errorf("parse certificate: %w", err)
 	}
@@ -97,40 +95,4 @@ func ClientTLSConfig(certFile, keyFile, caFile string) (*tls.Config, error) {
 		cfg.RootCAs = pool
 	}
 	return cfg, nil
-}
-
-func parsePEM(data []byte) []byte {
-	const header = "-----BEGIN CERTIFICATE-----"
-	const footer = "-----END CERTIFICATE-----"
-	start := indexOf(data, []byte(header))
-	if start < 0 {
-		return nil
-	}
-	end := indexOf(data[start:], []byte(footer))
-	if end < 0 {
-		return nil
-	}
-	// Return just the DER bytes by re-parsing via a simpler route.
-	// Full PEM parsing via encoding/pem is done in callers.
-	_ = footer
-	return data[start : start+end+len(footer)]
-}
-
-func indexOf(haystack, needle []byte) int {
-	for i := range haystack {
-		if i+len(needle) > len(haystack) {
-			break
-		}
-		match := true
-		for j := range needle {
-			if haystack[i+j] != needle[j] {
-				match = false
-				break
-			}
-		}
-		if match {
-			return i
-		}
-	}
-	return -1
 }
