@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Parameters Dashboard</title>
+  <link rel="stylesheet" href="/assets/style.css">
+</head>
+<body>
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <svg class="brand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <rect x="2" y="3" width="20" height="14" rx="2"/>
+        <path d="M8 21h8M12 17v4"/>
+      </svg>
+      <span class="brand-name">parameters</span>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a href="#" class="nav-item active" data-view="dashboard">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+        Dashboard
+      </a>
+      <a href="#" class="nav-item" data-view="services">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
+        Services
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <button class="theme-toggle" id="themeToggle" title="Toggle theme">
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
+      <span class="version-badge" id="coreVersion">v—</span>
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div class="topbar-left">
+        <h1 class="page-title" id="pageTitle">Dashboard</h1>
+      </div>
+      <div class="topbar-right">
+        <div class="overall-status" id="overallStatus">
+          <span class="status-dot unknown"></span>
+          <span class="status-label">Checking…</span>
+        </div>
+        <button class="btn-refresh" id="refreshBtn" title="Refresh now">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
+        </button>
+        <div class="auto-refresh">
+          <span class="auto-refresh-label">Auto-refresh in</span>
+          <span class="countdown" id="countdown">30s</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Dashboard view -->
+    <div id="view-dashboard" class="view active">
+      <div class="summary-row" id="summaryRow">
+        <div class="summary-card">
+          <div class="summary-num" id="sumTotal">—</div>
+          <div class="summary-label">Services</div>
+        </div>
+        <div class="summary-card healthy">
+          <div class="summary-num" id="sumHealthy">—</div>
+          <div class="summary-label">Healthy</div>
+        </div>
+        <div class="summary-card degraded">
+          <div class="summary-num" id="sumDegraded">—</div>
+          <div class="summary-label">Degraded</div>
+        </div>
+        <div class="summary-card down">
+          <div class="summary-num" id="sumDown">—</div>
+          <div class="summary-label">Down</div>
+        </div>
+      </div>
+
+      <div class="group-filter" id="groupFilter"></div>
+
+      <div class="services-grid" id="servicesGrid">
+        <div class="loading-state">
+          <div class="spinner"></div>
+          <p>Polling services…</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Services view -->
+    <div id="view-services" class="view">
+      <div class="services-table-wrap">
+        <table class="services-table" id="servicesTable">
+          <thead>
+            <tr>
+              <th>Service</th>
+              <th>Group</th>
+              <th>Status</th>
+              <th>Version</th>
+              <th>Latency</th>
+              <th>Last check</th>
+              <th>URL</th>
+            </tr>
+          </thead>
+          <tbody id="servicesTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <div class="toast-container" id="toasts"></div>
+
+  <script src="/assets/app.js"></script>
+</body>
+</html>
