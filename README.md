@@ -21,6 +21,7 @@ Foundational Go library shared across all **parameters** services. Provides cons
 | `pkg/tlsutil` | TLS cert/key loading, mTLS config builders |
 | `pkg/client` | Retry-capable HTTP client for inter-service calls |
 | `pkg/version` | Build-time version embedding |
+| `pkg/ui` | Service registry, health polling, and HTTP handlers backing the `dashboard` binary |
 
 ## Quick start
 
@@ -76,6 +77,53 @@ func main() {
 - [parameters-ntp](https://github.com/jasonmiller-cc/parameters-ntp) — NTP service management
 - [parameters-fs](https://github.com/jasonmiller-cc/parameters-fs) — Filesystem and quota management
 - [parameters-network](https://github.com/jasonmiller-cc/parameters-network) — Network interface and routing
+
+## Dashboard
+
+`cmd/dashboard` is a standalone binary that polls every registered service's
+`/healthz` endpoint and serves a web UI showing platform-wide status, version,
+and latency, plus a reverse proxy for calling any service's API directly from
+the browser.
+
+```bash
+go build -o dashboard ./cmd/dashboard
+./dashboard                # auto-discovers dashboard.yaml, else uses built-in defaults
+./dashboard -config dashboard.yaml
+./dashboard -gen-config > dashboard.yaml   # print a starter config
+./dashboard -version
+```
+
+By default it listens on `0.0.0.0:9090` and polls `http://localhost:8081`-`8089`
+(the standard per-service ports below). Config is loaded from `dashboard.yaml`
+in the working directory, then `/etc/parameters/dashboard.yaml`, falling back
+to `ui.DefaultConfig()` if neither exists.
+
+```yaml
+server:
+  host: 0.0.0.0
+  port: 9090
+
+poll:
+  interval_s: 30
+
+services:
+  - name: dns
+    display_name: DNS
+    url: http://localhost:8081
+    description: DNS zone and record management
+    group: network
+```
+
+Endpoints:
+
+| Endpoint | Description |
+|---|---|
+| `GET /` | Dashboard UI |
+| `GET /api/platform/summary` | Aggregate health counts |
+| `GET /api/platform/services` | Per-service status, version, latency |
+| `POST /api/platform/poll` | Trigger an immediate poll of all services |
+| `GET /api/version` | Dashboard build version |
+| `/proxy/{service}/{rest...}` | Reverse proxy to a registered service's API |
 
 ## Config conventions
 
