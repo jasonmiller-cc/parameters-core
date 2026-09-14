@@ -1,0 +1,37 @@
+package version
+
+import (
+	"fmt"
+	"runtime"
+)
+
+var (
+	Version   = "dev"
+	Commit    = "unknown"
+	BuildTime = "unknown"
+	GoVersion = runtime.Version()
+)
+
+type Info struct {
+	Version   string `json:"version"`
+	Commit    string `json:"commit"`
+	BuildTime string `json:"build_time"`
+	GoVersion string `json:"go_version"`
+	OS        string `json:"os"`
+	Arch      string `json:"arch"`
+}
+
+func Get() Info {
+	return Info{
+		Version:   Version,
+		Commit:    Commit,
+		BuildTime: BuildTime,
+		GoVersion: GoVersion,
+		OS:        runtime.GOOS,
+		Arch:      runtime.GOARCH,
+	}
+}
+
+func String() string {
+	return fmt.Sprintf("%s (commit=%s built=%s %s/%s)", Version, Commit, BuildTime, runtime.GOOS, runtime.GOARCH)
+}
