@@ -153,7 +153,7 @@ func (r *Registry) probe(ctx context.Context, svc ServiceEntry) *ServiceStatus {
 		st.Error = err.Error()
 		return st
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	var h healthResponse
 	if err := json.NewDecoder(resp.Body).Decode(&h); err != nil {

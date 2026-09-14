@@ -131,7 +131,7 @@ func serveIndex(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "dashboard not found", http.StatusInternalServerError)
 		return
 	}
-	defer f.Close()
+	defer func() { _ = f.Close() }()
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	http.ServeContent(w, r, "index.html", time.Time{}, f.(interface {
 		Read([]byte) (int, error)

@@ -49,8 +49,7 @@ func New(cfg config.ServerConfig, handler http.Handler, log *corelog.Logger) *Se
 
 	if cfg.TLSCert != "" && cfg.TLSKey != "" {
 		s.http.TLSConfig = &tls.Config{
-			MinVersion:               tls.VersionTLS12,
-			PreferServerCipherSuites: true,
+			MinVersion: tls.VersionTLS12,
 		}
 	}
 

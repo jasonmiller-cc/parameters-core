@@ -117,21 +117,25 @@ func (c *Client) do(ctx context.Context, method, path string, body, out any) err
 			lastErr = err
 			continue
 		}
-		defer resp.Body.Close()
 
 		if resp.StatusCode >= 500 && attempt < c.maxRetry {
 			lastErr = fmt.Errorf("server error %d", resp.StatusCode)
+			_ = resp.Body.Close()
 			continue
 		}
 
 		if resp.StatusCode >= 400 {
 			b, _ := io.ReadAll(resp.Body)
+			_ = resp.Body.Close()
 			return fmt.Errorf("http %d: %s", resp.StatusCode, string(b))
 		}
 
 		if out != nil {
-			return json.NewDecoder(resp.Body).Decode(out)
+			err := json.NewDecoder(resp.Body).Decode(out)
+			_ = resp.Body.Close()
+			return err
 		}
+		_ = resp.Body.Close()
 		return nil
 	}
 	return lastErr

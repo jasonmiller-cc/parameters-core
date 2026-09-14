@@ -12,7 +12,7 @@ import (
 // when one is set. Only basic types (string, int, bool) are handled.
 func ApplyEnv(prefix string, dst any) {
 	v := reflect.ValueOf(dst)
-	if v.Kind() != reflect.Ptr || v.IsNil() {
+	if v.Kind() != reflect.Pointer || v.IsNil() {
 		return
 	}
 	applyEnvValue(prefix, v.Elem())
